@@ -1,177 +1,365 @@
 "use client";
 
-import { Bell, ChevronDown, Search } from "lucide-react";
-import { useState } from "react";
+import Sidebar from "@/components/dashboard/sidebar";
+import Topbar from "@/components/dashboard/topbar";
+import TaskCard from "@/components/dashboard/task-card";
 
-export default function Topbar() {
-  const [search, setSearch] = useState("");
-  const [notificationOpen, setNotificationOpen] = useState(false);
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  ClipboardList,
+  Plus,
+  TrendingUp,
+} from "lucide-react";
+import Link from "next/link";
 
+export default function DashboardPage() {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur-xl">
-      <div className="flex h-20 items-center justify-between gap-4 px-5 sm:px-8 lg:px-10">
-        
-        {/* ================= SEARCH ================= */}
+    <main className="min-h-screen bg-[#f8fafc] text-slate-900">
 
-        <div className="relative hidden max-w-xl flex-1 md:block">
-          <Search
-            size={20}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
+      {/* ================= SIDEBAR ================= */}
 
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search tasks, skills, or students..."
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-12 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
-          />
-        </div>
+      <Sidebar />
 
-        {/* ================= MOBILE LOGO ================= */}
+      {/* ================= MAIN AREA ================= */}
 
-        <div className="flex flex-1 justify-center md:hidden">
-          <span className="text-lg font-bold tracking-tight text-slate-900">
-            Campus<span className="text-blue-600">Task</span>
-          </span>
-        </div>
+      <div className="min-h-screen lg:pl-72">
 
-        {/* ================= RIGHT SIDE ================= */}
+        {/* ================= TOPBAR ================= */}
 
-        <div className="ml-auto flex items-center gap-3">
-          
-          {/* Mobile Search */}
+        <Topbar />
 
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 md:hidden"
-            aria-label="Search"
-          >
-            <Search size={21} />
-          </button>
+        {/* ================= CONTENT ================= */}
 
-          {/* Notifications */}
+        <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
 
-          <div className="relative">
-            <button
-              onClick={() => setNotificationOpen(!notificationOpen)}
-              className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
-              aria-label="Notifications"
+          {/* ================= WELCOME ================= */}
+
+          <section className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+
+            <div>
+              <p className="text-sm font-semibold tracking-wide text-blue-600">
+                DASHBOARD
+              </p>
+
+              <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                Welcome back, Ayush 👋
+              </h1>
+
+              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
+                Here&apos;s what&apos;s happening in your CampusTask community
+                today.
+              </p>
+            </div>
+
+            <Link
+              href="/dashboard/tasks/create"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700 active:scale-[0.98]"
             >
-              <Bell size={20} />
+              <Plus size={19} />
+              Post a task
+            </Link>
 
-              <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600" />
-            </button>
+          </section>
 
-            {notificationOpen && (
-              <div className="absolute right-0 mt-3 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/70">
-                
-                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                  <div>
-                    <h3 className="font-bold text-slate-900">
-                      Notifications
-                    </h3>
 
-                    <p className="mt-0.5 text-xs text-slate-500">
-                      You have 3 new updates
-                    </p>
-                  </div>
+          {/* ================= STATS ================= */}
 
-                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-600">
-                    3 new
-                  </span>
+          <section className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+
+            <StatCard
+              title="Active tasks"
+              value="12"
+              description="Tasks available for you"
+              icon={<ClipboardList size={22} />}
+            />
+
+            <StatCard
+              title="Tasks completed"
+              value="08"
+              description="Great progress this month"
+              icon={<CheckCircle2 size={22} />}
+            />
+
+            <StatCard
+              title="Pending requests"
+              value="03"
+              description="Waiting for your response"
+              icon={<Clock3 size={22} />}
+            />
+
+            <StatCard
+              title="Your contribution"
+              value="24"
+              description="Students helped"
+              icon={<TrendingUp size={22} />}
+            />
+
+          </section>
+
+
+          {/* ================= MAIN GRID ================= */}
+
+          <section className="mt-10 grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
+
+
+            {/* ================= TASKS ================= */}
+
+            <div>
+
+              <div className="mb-6 flex items-center justify-between gap-4">
+
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Available tasks
+                  </h2>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Discover tasks where you can help other students.
+                  </p>
                 </div>
 
-                <div className="divide-y divide-slate-100">
-                  <NotificationItem
-                    title="New task available"
-                    description="A new academic task was posted."
-                    time="2 min ago"
+                <Link
+                  href="/dashboard/tasks"
+                  className="hidden items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-700 sm:flex"
+                >
+                  View all
+                  <ArrowRight size={17} />
+                </Link>
+
+              </div>
+
+
+              {/* ================= TASK LIST ================= */}
+
+              <div className="grid gap-5">
+
+                <TaskCard
+                  id="physics-assignment"
+                  title="Need help with Physics assignment"
+                  description="Looking for someone who can help me understand electromagnetic induction and solve a few questions."
+                  category="Academic"
+                  author="Rahul Sharma"
+                  time="10 min ago"
+                  status="Open"
+                />
+
+                <TaskCard
+                  id="react-teammate"
+                  title="Looking for a React.js teammate"
+                  description="Need a student interested in frontend development for a small campus project."
+                  category="Technology"
+                  author="Priya Singh"
+                  time="32 min ago"
+                  status="Open"
+                />
+
+                <TaskCard
+                  id="math-notes"
+                  title="Need notes for Mathematics"
+                  description="Looking for complete notes and important questions for integration and differential equations."
+                  category="Academic"
+                  author="Aman Kumar"
+                  time="1 hour ago"
+                  status="Open"
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* ================= RIGHT PANEL ================= */}
+
+            <aside className="space-y-6">
+
+
+              {/* QUICK ACTIONS */}
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                <h3 className="text-lg font-bold">
+                  Quick actions
+                </h3>
+
+                <div className="mt-5 space-y-3">
+
+                  <QuickAction
+                    href="/dashboard/tasks/create"
+                    icon={<Plus size={18} />}
+                    title="Post a task"
+                    description="Ask your campus community for help."
                   />
 
-                  <NotificationItem
-                    title="Someone responded"
-                    description="You received a response to your task."
-                    time="15 min ago"
+                  <QuickAction
+                    href="/dashboard/tasks"
+                    icon={<ClipboardList size={18} />}
+                    title="Browse tasks"
+                    description="Find something you can help with."
                   />
 
-                  <NotificationItem
-                    title="Welcome to CampusTask!"
-                    description="Your account is ready to go."
+                </div>
+
+              </div>
+
+
+              {/* ACTIVITY */}
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+                <div className="flex items-center justify-between">
+
+                  <h3 className="text-lg font-bold">
+                    Recent activity
+                  </h3>
+
+                  <span className="text-xs font-medium text-slate-400">
+                    Today
+                  </span>
+
+                </div>
+
+
+                <div className="mt-6 space-y-5">
+
+                  <ActivityItem
+                    title="Your account was created"
                     time="Today"
                   />
+
+                  <ActivityItem
+                    title="Email successfully verified"
+                    time="Today"
+                  />
+
+                  <ActivityItem
+                    title="Welcome to CampusTask"
+                    time="Today"
+                  />
+
                 </div>
 
-                <button className="w-full border-t border-slate-100 px-5 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-50">
-                  View all notifications
-                </button>
               </div>
-            )}
-          </div>
 
-          {/* User Profile */}
+            </aside>
 
-          <button className="hidden items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-slate-100 sm:flex">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-md">
-              A
-            </div>
+          </section>
 
-            <div className="hidden text-left lg:block">
-              <p className="text-sm font-semibold text-slate-800">
-                Ayush
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Student
-              </p>
-            </div>
-
-            <ChevronDown
-              size={17}
-              className="hidden text-slate-400 lg:block"
-            />
-          </button>
-
-          {/* Mobile Avatar */}
-
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white sm:hidden">
-            A
-          </div>
         </div>
+
       </div>
-    </header>
+
+    </main>
   );
 }
 
-function NotificationItem({
+
+/* ================= STAT CARD ================= */
+
+function StatCard({
+  title,
+  value,
+  description,
+  icon,
+}: {
+  title: string;
+  value: string;
+  description: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+
+      <div className="flex items-start justify-between">
+
+        <div>
+          <p className="text-sm font-medium text-slate-500">
+            {title}
+          </p>
+
+          <p className="mt-3 text-3xl font-bold tracking-tight">
+            {value}
+          </p>
+        </div>
+
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          {icon}
+        </div>
+
+      </div>
+
+      <p className="mt-4 text-xs text-slate-500">
+        {description}
+      </p>
+
+    </div>
+  );
+}
+
+
+/* ================= QUICK ACTION ================= */
+
+function QuickAction({
+  href,
+  icon,
   title,
   description,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex gap-3 rounded-xl border border-slate-100 p-3 transition hover:border-blue-100 hover:bg-blue-50/50"
+    >
+
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-sm font-semibold text-slate-800">
+          {title}
+        </p>
+
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          {description}
+        </p>
+      </div>
+
+    </Link>
+  );
+}
+
+
+/* ================= ACTIVITY ITEM ================= */
+
+function ActivityItem({
+  title,
   time,
 }: {
   title: string;
-  description: string;
   time: string;
 }) {
   return (
-    <button className="w-full px-5 py-4 text-left transition hover:bg-slate-50">
-      <div className="flex gap-3">
-        <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600" />
+    <div className="flex gap-3">
 
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-sm font-semibold text-slate-800">
-              {title}
-            </p>
+      <div className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600" />
 
-            <span className="shrink-0 text-xs text-slate-400">
-              {time}
-            </span>
-          </div>
+      <div>
+        <p className="text-sm font-medium text-slate-700">
+          {title}
+        </p>
 
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            {description}
-          </p>
-        </div>
+        <p className="mt-1 text-xs text-slate-400">
+          {time}
+        </p>
       </div>
-    </button>
+
+    </div>
   );
 }
