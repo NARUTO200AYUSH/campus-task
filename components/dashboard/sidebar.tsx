@@ -2,25 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   Bell,
   ClipboardList,
-  Home,
-  LogOut,
+  FileText,
+  HelpCircle,
+  LayoutDashboard,
   Menu,
   MessageSquare,
-  Plus,
   Settings,
   User,
+  Users,
   X,
 } from "lucide-react";
-import { useState } from "react";
 
 const navigation = [
   {
     name: "Dashboard",
     href: "/dashboard",
-    icon: Home,
+    icon: LayoutDashboard,
   },
   {
     name: "Browse Tasks",
@@ -28,14 +29,24 @@ const navigation = [
     icon: ClipboardList,
   },
   {
-    name: "Post a Task",
-    href: "/dashboard/tasks/create",
-    icon: Plus,
+    name: "My Tasks",
+    href: "/dashboard/my-tasks",
+    icon: FileText,
+  },
+  {
+    name: "Applications",
+    href: "/dashboard/applications",
+    icon: Users,
   },
   {
     name: "Messages",
     href: "/dashboard/messages",
     icon: MessageSquare,
+  },
+  {
+    name: "Notifications",
+    href: "/dashboard/notifications",
+    icon: Bell,
   },
   {
     name: "Profile",
@@ -49,91 +60,66 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isActiveRoute = (href: string) => {
-    /* ================= DASHBOARD ================= */
-
     if (href === "/dashboard") {
       return pathname === "/dashboard";
     }
-
-    /* ================= POST A TASK ================= */
-
-    if (href === "/dashboard/tasks/create") {
-      return pathname === "/dashboard/tasks/create";
-    }
-
-    /* ================= BROWSE TASKS ================= */
-
-    if (href === "/dashboard/tasks") {
-      return (
-        pathname === "/dashboard/tasks" ||
-        (pathname.startsWith("/dashboard/tasks/") &&
-          pathname !== "/dashboard/tasks/create")
-      );
-    }
-
-    /* ================= OTHER ROUTES ================= */
 
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
   return (
     <>
-      {/* ================= MOBILE MENU BUTTON ================= */}
-
+      {/* MOBILE MENU BUTTON */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-lg lg:hidden"
+        className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm lg:hidden"
         aria-label="Open menu"
       >
-        <Menu size={22} />
+        <Menu size={21} />
       </button>
 
-      {/* ================= MOBILE OVERLAY ================= */}
-
+      {/* MOBILE OVERLAY */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
         />
       )}
 
-      {/* ================= SIDEBAR ================= */}
-
+      {/* SIDEBAR */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[270px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* ================= LOGO ================= */}
-
+        {/* LOGO */}
         <div className="flex h-20 items-center justify-between border-b border-slate-100 px-6">
           <Link
             href="/dashboard"
-            className="flex items-center gap-3"
             onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg shadow-blue-600/25">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white shadow-sm">
               C
             </div>
 
-            <span className="text-xl font-bold tracking-tight text-slate-900">
+            <span className="text-lg font-bold text-slate-900">
               Campus<span className="text-blue-600">Task</span>
             </span>
           </Link>
 
           <button
             onClick={() => setMobileOpen(false)}
-            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 lg:hidden"
+            className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 lg:hidden"
             aria-label="Close menu"
           >
-            <X size={21} />
+            <X size={20} />
           </button>
         </div>
 
-        {/* ================= NAVIGATION ================= */}
-
-        <nav className="flex-1 overflow-y-auto px-4 py-7">
-          <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+        {/* NAVIGATION */}
+        <nav className="flex-1 overflow-y-auto px-4 py-6">
+          <p className="mb-3 px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
             Workspace
           </p>
 
@@ -147,19 +133,15 @@ export default function Sidebar() {
                   key={item.name}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition ${
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
                     isActive
-                      ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
                   <Icon
-                    size={20}
-                    className={
-                      isActive
-                        ? "text-white"
-                        : "text-slate-400 transition group-hover:text-blue-600"
-                    }
+                    size={19}
+                    className={isActive ? "text-white" : "text-slate-400"}
                   />
 
                   <span>{item.name}</span>
@@ -168,7 +150,7 @@ export default function Sidebar() {
                     <span
                       className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold ${
                         isActive
-                          ? "bg-white text-blue-600"
+                          ? "bg-white/20 text-white"
                           : "bg-blue-100 text-blue-600"
                       }`}
                     >
@@ -180,26 +162,48 @@ export default function Sidebar() {
             })}
           </div>
 
-          {/* ================= QUICK ACCESS ================= */}
-
+          {/* QUICK ACCESS */}
           <div className="mt-8">
-            <p className="mb-3 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+            <p className="mb-3 px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
               Quick Access
             </p>
 
             <Link
               href="/dashboard/tasks/create"
               onClick={() => setMobileOpen(false)}
-              className="flex w-full items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-3 py-3 text-left text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                pathname === "/dashboard/tasks/create"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+              }`}
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md shadow-blue-600/20">
-                <Plus size={18} />
+              <div
+                className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                  pathname === "/dashboard/tasks/create"
+                    ? "bg-white/20"
+                    : "bg-blue-600"
+                }`}
+              >
+                <span
+                  className={
+                    pathname === "/dashboard/tasks/create"
+                      ? "text-white"
+                      : "text-lg font-medium text-white"
+                  }
+                >
+                  +
+                </span>
               </div>
 
               <div>
                 <p>Need help?</p>
-
-                <p className="mt-0.5 text-xs font-normal text-blue-500">
+                <p
+                  className={`text-[10px] font-medium ${
+                    pathname === "/dashboard/tasks/create"
+                      ? "text-blue-100"
+                      : "text-slate-400"
+                  }`}
+                >
                   Post a task
                 </p>
               </div>
@@ -207,62 +211,60 @@ export default function Sidebar() {
           </div>
         </nav>
 
-        {/* ================= BOTTOM SECTION ================= */}
-
+        {/* BOTTOM NAVIGATION */}
         <div className="border-t border-slate-100 p-4">
-          {/* Notifications */}
-
-          <Link
-            href="/dashboard/notifications"
-            onClick={() => setMobileOpen(false)}
-            className="mb-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
-          >
-            <div className="relative">
-              <Bell size={20} className="text-slate-400" />
-
-              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600" />
-            </div>
-
-            Notifications
-          </Link>
-
-          {/* Settings */}
-
           <Link
             href="/dashboard/settings"
             onClick={() => setMobileOpen(false)}
-            className="mb-3 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            className={`mb-1 flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+              isActiveRoute("/dashboard/settings")
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
           >
-            <Settings size={20} className="text-slate-400" />
-
+            <Settings
+              size={19}
+              className={
+                isActiveRoute("/dashboard/settings")
+                  ? "text-blue-600"
+                  : "text-slate-400"
+              }
+            />
             Settings
           </Link>
 
-          {/* ================= USER CARD ================= */}
+          <Link
+            href="/dashboard/help"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+              isActiveRoute("/dashboard/help")
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`}
+          >
+            <HelpCircle
+              size={19}
+              className={
+                isActiveRoute("/dashboard/help")
+                  ? "text-blue-600"
+                  : "text-slate-400"
+              }
+            />
+            Help
+          </Link>
 
-          <div className="border-t border-slate-100 pt-4">
-            <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-md">
-                A
-              </div>
+          {/* USER */}
+          <div className="mt-3 flex items-center gap-3 rounded-xl px-3 py-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+              A
+            </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-800">
-                  Ayush Anand
-                </p>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-slate-900">
+                Ayush Anand
+              </p>
 
-                <p className="truncate text-xs text-slate-500">
-                  Student
-                </p>
-              </div>
-
-              <button
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-white hover:text-red-500"
-                aria-label="Log out"
-                title="Log out"
-              >
-                <LogOut size={18} />
-              </button>
+              <p className="text-xs text-slate-500">Student</p>
             </div>
           </div>
         </div>

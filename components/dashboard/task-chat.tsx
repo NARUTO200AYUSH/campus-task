@@ -1,11 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import {
-  ChevronDown,
+  ArrowLeft,
+  CheckCheck,
   MessageSquare,
   Send,
-  User,
   X,
 } from "lucide-react";
 
@@ -21,6 +21,15 @@ type TaskChatProps = {
   author: string;
   onClose?: () => void;
 };
+
+function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
 
 export default function TaskChat({
   taskTitle,
@@ -39,10 +48,21 @@ export default function TaskChat({
     {
       id: 2,
       sender: "owner",
-      text: `I posted this task because I need some help with ${taskTitle.toLowerCase()}.`,
+      text: `I posted this because I need some help with ${taskTitle.toLowerCase()}.`,
       time: "10:25 AM",
     },
   ]);
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const firstName = author.split(" ")[0];
+  const initials = getInitials(author);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   const handleSendMessage = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,35 +85,58 @@ export default function TaskChat({
   };
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      {/* ================= CHAT HEADER ================= */}
+    <section
+      id="task-discussion"
+      className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
+    >
+      {/* CHAT HEADER */}
 
-      <div className="border-b border-slate-100 p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-md">
-              {author.charAt(0).toUpperCase()}
-            </div>
+      <div className="border-b border-slate-200 bg-white">
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-4">
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 sm:hidden"
+                aria-label="Back"
+              >
+                <ArrowLeft size={20} />
+              </button>
+            )}
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="truncate text-base font-bold text-slate-900">
-                  {author}
-                </h2>
+            {/* AVATAR */}
 
-                <span className="h-2 w-2 shrink-0 rounded-full bg-green-500" />
+            <div className="relative">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-sm">
+                {initials}
               </div>
 
-              <p className="mt-0.5 text-xs text-slate-500">
-                Task owner
-              </p>
+              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
+            </div>
+
+            {/* PERSON */}
+
+            <div className="min-w-0">
+              <h2 className="truncate text-base font-bold text-slate-900">
+                {author}
+              </h2>
+
+              <div className="mt-0.5 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+
+                <p className="text-xs font-medium text-slate-500">
+                  Active now
+                </p>
+              </div>
             </div>
           </div>
 
           {onClose && (
             <button
+              type="button"
               onClick={onClose}
-              className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+              className="hidden h-10 w-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 sm:flex"
               aria-label="Close chat"
             >
               <X size={20} />
@@ -103,95 +146,132 @@ export default function TaskChat({
 
         {/* TASK CONTEXT */}
 
-        <div className="mt-5 flex items-center gap-3 rounded-xl border border-blue-100 bg-blue-50 p-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <MessageSquare size={17} />
-          </div>
+        <div className="border-t border-blue-100 bg-blue-50/70 px-5 py-3 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
+              <MessageSquare size={17} />
+            </div>
 
-          <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-blue-500">
-              Discussing task
-            </p>
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-blue-500">
+                Discussing task
+              </p>
 
-            <p className="truncate text-sm font-semibold text-blue-900">
-              {taskTitle}
-            </p>
+              <p className="mt-0.5 truncate text-sm font-semibold text-blue-950">
+                {taskTitle}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ================= MESSAGES ================= */}
+      {/* MESSAGES */}
 
-      <div className="max-h-[420px] min-h-[300px] space-y-5 overflow-y-auto bg-slate-50/60 p-5 sm:p-6">
-        <div className="flex items-center gap-3">
+      <div className="h-[420px] overflow-y-auto bg-slate-50/60 px-5 py-6 sm:px-7">
+        {/* DATE */}
+
+        <div className="mb-7 flex items-center gap-4">
           <div className="h-px flex-1 bg-slate-200" />
 
-          <span className="text-[11px] font-medium text-slate-400">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
             Today
           </span>
 
           <div className="h-px flex-1 bg-slate-200" />
         </div>
 
-        {messages.map((item) => (
-          <div
-            key={item.id}
-            className={`flex ${
-              item.sender === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[85%] sm:max-w-[75%] ${
-                item.sender === "user"
-                  ? "rounded-2xl rounded-br-md bg-blue-600 text-white"
-                  : "rounded-2xl rounded-bl-md border border-slate-200 bg-white text-slate-700"
-              } px-4 py-3 shadow-sm`}
-            >
-              <p className="text-sm leading-6">{item.text}</p>
+        <div className="space-y-5">
+          {messages.map((item) => {
+            const isUser = item.sender === "user";
 
-              <p
-                className={`mt-1 text-right text-[10px] ${
-                  item.sender === "user"
-                    ? "text-blue-100"
-                    : "text-slate-400"
+            return (
+              <div
+                key={item.id}
+                className={`flex items-end gap-2 ${
+                  isUser ? "justify-end" : "justify-start"
                 }`}
               >
-                {item.time}
-              </p>
-            </div>
-          </div>
-        ))}
+                {/* OWNER AVATAR */}
+
+                {!isUser && (
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white">
+                    {initials}
+                  </div>
+                )}
+
+                <div
+                  className={`max-w-[80%] sm:max-w-[68%] ${
+                    isUser ? "text-right" : "text-left"
+                  }`}
+                >
+                  {!isUser && (
+                    <p className="mb-1.5 ml-1 text-[11px] font-semibold text-slate-500">
+                      {firstName}
+                    </p>
+                  )}
+
+                  <div
+                    className={`inline-block px-4 py-3 text-left shadow-sm ${
+                      isUser
+                        ? "rounded-2xl rounded-br-md bg-blue-600 text-white"
+                        : "rounded-2xl rounded-bl-md border border-slate-200 bg-white text-slate-700"
+                    }`}
+                  >
+                    <p className="text-sm leading-6">{item.text}</p>
+                  </div>
+
+                  <div
+                    className={`mt-1.5 flex items-center gap-1 text-[10px] text-slate-400 ${
+                      isUser ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <span>{item.time}</span>
+
+                    {isUser && (
+                      <CheckCheck
+                        size={13}
+                        className="text-blue-500"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
-      {/* ================= MESSAGE INPUT ================= */}
+      {/* MESSAGE INPUT */}
 
       <form
         onSubmit={handleSendMessage}
-        className="border-t border-slate-100 bg-white p-4 sm:p-5"
+        className="border-t border-slate-200 bg-white p-4 sm:p-5"
       >
-        <div className="flex items-end gap-3">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-blue-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-100">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
             <input
               type="text"
               value={message}
               onChange={(event) => setMessage(event.target.value)}
-              placeholder={`Message ${author}...`}
-              className="h-12 w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              placeholder={`Message ${firstName}...`}
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
           </div>
 
           <button
             type="submit"
             disabled={!message.trim()}
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="Send message"
           >
             <Send size={19} />
           </button>
         </div>
 
-        <p className="mt-3 text-center text-[11px] text-slate-400">
-          This conversation is linked to this specific task.
+        <p className="mt-3 text-center text-[10px] font-medium text-slate-400">
+          This conversation is linked to this task.
         </p>
       </form>
     </section>
