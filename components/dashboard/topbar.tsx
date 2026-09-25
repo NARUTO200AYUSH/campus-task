@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Bell, ChevronDown, Search } from "lucide-react";
 import { useState } from "react";
 
@@ -37,17 +38,19 @@ export default function Topbar() {
         {/* RIGHT SIDE */}
         <div className="ml-auto flex items-center gap-3">
 
-          {/* Mobile Search */}
+          {/* MOBILE SEARCH */}
           <button
+            type="button"
             className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 md:hidden"
             aria-label="Search"
           >
             <Search size={21} />
           </button>
 
-          {/* Notifications */}
+          {/* NOTIFICATIONS */}
           <div className="relative">
             <button
+              type="button"
               onClick={() => setNotificationOpen(!notificationOpen)}
               className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
               aria-label="Notifications"
@@ -59,7 +62,8 @@ export default function Topbar() {
 
             {notificationOpen && (
               <div className="absolute right-0 mt-3 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/70">
-                
+
+                {/* NOTIFICATION HEADER */}
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                   <div>
                     <h3 className="font-bold text-slate-900">
@@ -76,6 +80,7 @@ export default function Topbar() {
                   </span>
                 </div>
 
+                {/* NOTIFICATION ITEMS */}
                 <div className="divide-y divide-slate-100">
                   <NotificationItem
                     title="New task available"
@@ -96,15 +101,23 @@ export default function Topbar() {
                   />
                 </div>
 
-                <button className="w-full border-t border-slate-100 px-5 py-3 text-sm font-semibold text-blue-600 transition hover:bg-blue-50">
+                {/* VIEW ALL NOTIFICATIONS */}
+                <Link
+                  href="/dashboard/notifications"
+                  onClick={() => setNotificationOpen(false)}
+                  className="block w-full border-t border-slate-100 px-5 py-3 text-center text-sm font-semibold text-blue-600 transition hover:bg-blue-50"
+                >
                   View all notifications
-                </button>
+                </Link>
               </div>
             )}
           </div>
 
-          {/* User Profile */}
-          <button className="hidden items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-slate-100 sm:flex">
+          {/* USER PROFILE */}
+          <button
+            type="button"
+            className="hidden items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-slate-100 sm:flex"
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white shadow-md">
               A
             </div>
@@ -125,7 +138,7 @@ export default function Topbar() {
             />
           </button>
 
-          {/* Mobile Avatar */}
+          {/* MOBILE AVATAR */}
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white sm:hidden">
             A
           </div>
@@ -146,7 +159,10 @@ function NotificationItem({
   time: string;
 }) {
   return (
-    <button className="w-full px-5 py-4 text-left transition hover:bg-slate-50">
+    <button
+      type="button"
+      className="w-full px-5 py-4 text-left transition hover:bg-slate-50"
+    >
       <div className="flex gap-3">
         <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600" />
 
