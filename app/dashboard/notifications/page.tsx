@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -11,7 +12,6 @@ import {
   Clock3,
   FileText,
   MessageSquare,
-  MoreHorizontal,
   UserPlus,
   X,
 } from "lucide-react";
@@ -69,29 +69,29 @@ const initialNotifications: Notification[] = [
     time: "1 hour ago",
     group: "Today",
     read: false,
-    href: "/dashboard/applications",
+    href: "/dashboard/tasks/react-teammate",
   },
   {
     id: 4,
     type: "task",
-    title: "Your task is getting attention",
+    title: "Your Physics task is getting attention",
     description:
-      "Your electronics project has received 4 applications.",
+      "Your Physics assignment has received 4 applications.",
     time: "3 hours ago",
     group: "Today",
     read: true,
-    href: "/dashboard/tasks/electronics-project",
+    href: "/dashboard/tasks/physics-assignment",
   },
   {
     id: 5,
     type: "deadline",
     title: "Task deadline approaching",
     description:
-      "Your frontend developer task has 2 days remaining.",
+      "Your React.js teammate task has 2 days remaining.",
     time: "Yesterday",
     group: "Earlier",
     read: true,
-    href: "/dashboard/my-tasks",
+    href: "/dashboard/tasks/react-teammate",
   },
   {
     id: 6,
@@ -113,11 +113,13 @@ const initialNotifications: Notification[] = [
     time: "2 days ago",
     group: "Earlier",
     read: true,
-    href: "/dashboard/my-tasks",
+    href: "/dashboard/tasks/math-notes",
   },
 ];
 
 export default function NotificationsPage() {
+  const router = useRouter();
+
   const [notifications, setNotifications] = useState(
     initialNotifications
   );
@@ -147,6 +149,11 @@ export default function NotificationsPage() {
     );
   };
 
+  const openNotification = (notification: Notification) => {
+    markAsRead(notification.id);
+    router.push(notification.href);
+  };
+
   const markAllAsRead = () => {
     setNotifications((current) =>
       current.map((notification) => ({
@@ -170,6 +177,7 @@ export default function NotificationsPage() {
         <Topbar />
 
         <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+
           {/* HEADER */}
 
           <section className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
@@ -221,6 +229,7 @@ export default function NotificationsPage() {
           <section className="mt-10">
             {notifications.length > 0 ? (
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+
                 {/* TODAY */}
 
                 {groupedNotifications.Today.length > 0 && (
@@ -228,6 +237,7 @@ export default function NotificationsPage() {
                     title="Today"
                     notifications={groupedNotifications.Today}
                     onRead={markAsRead}
+                    onOpen={openNotification}
                     onRemove={removeNotification}
                   />
                 )}
@@ -239,6 +249,7 @@ export default function NotificationsPage() {
                     title="Earlier"
                     notifications={groupedNotifications.Earlier}
                     onRead={markAsRead}
+                    onOpen={openNotification}
                     onRemove={removeNotification}
                   />
                 )}
@@ -248,7 +259,7 @@ export default function NotificationsPage() {
             )}
           </section>
 
-          {/* FOOTER NOTE */}
+          {/* FOOTER */}
 
           {notifications.length > 0 && (
             <p className="mt-5 text-center text-xs text-slate-400">
@@ -269,11 +280,13 @@ function NotificationGroup({
   title,
   notifications,
   onRead,
+  onOpen,
   onRemove,
 }: {
   title: string;
   notifications: Notification[];
   onRead: (id: number) => void;
+  onOpen: (notification: Notification) => void;
   onRemove: (id: number) => void;
 }) {
   return (
@@ -290,6 +303,7 @@ function NotificationGroup({
             key={notification.id}
             notification={notification}
             onRead={onRead}
+            onOpen={onOpen}
             onRemove={onRemove}
           />
         ))}
@@ -305,22 +319,32 @@ function NotificationGroup({
 function NotificationItem({
   notification,
   onRead,
+  onOpen,
   onRemove,
 }: {
   notification: Notification;
   onRead: (id: number) => void;
+  onOpen: (notification: Notification) => void;
   onRemove: (id: number) => void;
 }) {
   const Icon = getNotificationIcon(notification.type);
-
   const iconStyle = getNotificationIconStyle(notification.type);
 
   return (
     <div
-      className={`group relative flex gap-4 px-5 py-5 transition sm:px-6 ${
+      role="button"
+      tabIndex={0}
+      onClick={() => onOpen(notification)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen(notification);
+        }
+      }}
+      className={`group relative flex cursor-pointer gap-4 px-5 py-5 transition sm:px-6 ${
         notification.read
-          ? "bg-white hover:bg-slate-50/70"
-          : "bg-blue-50/35 hover:bg-blue-50/60"
+          ? "bg-white hover:bg-slate-50"
+          : "bg-blue-50/35 hover:bg-blue-50/70"
       }`}
     >
       {/* UNREAD DOT */}
@@ -341,17 +365,15 @@ function NotificationItem({
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-start sm:gap-4">
-          <Link
-            href={notification.href}
-            onClick={() => onRead(notification.id)}
-            className={`text-sm leading-6 transition hover:text-blue-600 ${
+          <p
+            className={`text-sm leading-6 transition group-hover:text-blue-600 ${
               notification.read
                 ? "font-semibold text-slate-700"
                 : "font-bold text-slate-900"
             }`}
           >
             {notification.title}
-          </Link>
+          </p>
 
           <span className="shrink-0 text-[10px] font-medium text-slate-400">
             {notification.time}
@@ -362,34 +384,32 @@ function NotificationItem({
           {notification.description}
         </p>
 
-        <div className="mt-3 flex items-center gap-3">
-          {!notification.read && (
-            <button
-              type="button"
-              onClick={() => onRead(notification.id)}
-              className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 transition hover:text-blue-700"
-            >
-              <Check size={13} />
-              Mark as read
-            </button>
-          )}
+        {/* MARK AS READ */}
 
-          <Link
-            href={notification.href}
-            onClick={() => onRead(notification.id)}
-            className="text-[11px] font-semibold text-slate-400 transition hover:text-slate-700"
+        {!notification.read && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRead(notification.id);
+            }}
+            className="relative z-10 mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 transition hover:text-blue-700"
           >
-            View
-          </Link>
-        </div>
+            <Check size={13} />
+            Mark as read
+          </button>
+        )}
       </div>
 
       {/* REMOVE */}
 
       <button
         type="button"
-        onClick={() => onRemove(notification.id)}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-300 opacity-0 transition hover:bg-slate-100 hover:text-slate-600 group-hover:opacity-100"
+        onClick={(event) => {
+          event.stopPropagation();
+          onRemove(notification.id);
+        }}
+        className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-300 opacity-0 transition hover:bg-slate-100 hover:text-slate-600 group-hover:opacity-100"
         aria-label={`Remove ${notification.title}`}
       >
         <X size={15} />
